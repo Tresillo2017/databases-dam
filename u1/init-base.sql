@@ -25,14 +25,22 @@ CREATE TABLE IF NOT EXISTS empleado
 -- NOW(): Funcion que devuelve la fecha y hora actual del sistema
     estado_civil   ENUM ('Soltero','Casado', 'Viudo'), -- Establezco un rango de valores permitidos en este campo
     id_producto    INT,
-    FOREIGN KEY (id_producto) REFERENCES producto (id_producto)
-    -- FOREIGN KEY (campo que quiero que see la clave secundaria
+    FOREIGN KEY (id_producto) REFERENCES producto (id_producto) -- FOREIGN KEY (campo que quiero que see la clave secundaria
 
     );
 
 -- Inserccion de Datos
+# DROP TABLE IF EXISTS producto;
 INSERT INTO producto (nombre, precio, stock)
 VALUES ('Nintendo Switch', 339.99, 50), -- Indicando que valores voy a insertar en cada campo
        ('PlayStation 5 Pro', 869.99, 35),
        ('XBOX Serie X', 543.93, 9);
+
+INSERT INTO empleado (email, nombre, edad, estado_civil, id_producto)
+VALUES ('ana.gomez@example.com', 'Ana Gomez', 28, 'Soltero', 1),
+       ('luis.martinez@example.com', 'Luis Martinez', 35, 'Casado', 1),
+       ('carlos.ruiz@example.com', 'Carlos Ruiz', 42, 'Viudo', 3),
+       ('pedro.sanchez@example.com', 'Pedro Sanchez', 30, 'Soltero', NULL);
+-- Fin del script
+
 

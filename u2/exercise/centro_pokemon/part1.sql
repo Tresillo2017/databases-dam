@@ -76,3 +76,36 @@ CREATE TABLE IF NOT EXISTS batalla (
     FOREIGN KEY (id_pokemon2) REFERENCES pokemon(id_pokemon) ON DELETE CASCADE,
     fecha_batalla DATETIME NOT NULL DEFAULT NOW()
 );
+
+INSERT INTO entrenador (nombre_entrenador, nivel_entrenador, telefono) VALUES
+('Ash Ketchum', 25, 123456789),
+('Rojo', 100, 987654321),
+('Azul', 100, 456789123),
+('Gary Oak', 50, 321654987);
+
+INSERT INTO tipo (nombre_tipo) VALUES
+('Fuego'),
+('Agua'),
+('Planta'),
+('Eléctrico');
+
+INSERT INTO pokemon (nombre_pokemon, nivel, id_entrenador, id_tipo) VALUES
+('Pikachu', 25, 1, 4), -- Tipo electrico
+('Charmander', 15, 2, 1), -- Tipo fuego
+('Venusaur', 55, 4, 3), -- Tipo agua
+('Blastoise', 75, 3, 2), -- Tipo planta
+('Vaporeon', 25, 4, 2); -- Tipo fuego
+
+INSERT INTO movimiento (nombre_movimiento, potencia, precission, efecto, categoria, id_tipo) VALUES
+('Lanzallamas', 95, 100, 'Quema', 'Especial', 1), -- Tipo fuego
+('Pistola Bomba', 40, 100, 'Nada', 'Especial', 2), -- Tipo agua
+('Placaje Electrico', 140, 100, 'Daño por retroceso', 'Fisico', 4), -- Tipo planta
+('Latigo cepa', 35, 95, 'Nada', 'Fisico', 3), -- Tipo electrico
+('Hidrobomba', 110, 85, 'Nada', 'Especial', 2); -- Tipo fuego
+
+INSERT INTO batalla (ganador, id_pokemon1, id_pokemon2) VALUES
+('1', 1, 2), -- Pikachu gana a Charmander
+('X', 3, 4), -- Venusaur empata con Blastoise
+('2', 5, 1), -- Vaporeon gana a Pikachu
+('1', 2, 4), -- Charmander gana a Blastoise
+('2', 1, 3); -- Pikachu gana a Venusaur

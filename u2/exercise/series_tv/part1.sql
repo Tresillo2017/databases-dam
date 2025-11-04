@@ -1,6 +1,6 @@
 /*
 Parte 1:
-    Crear una base de datos para gestionar la información de una plataforma de streaming de
+    Crear una base de datos para gestionar la información de una plataforma de juegecicos de
     series de televisión, incluyendo información sobre series, episodios, géneros, actores y usuarios.
 Instrucciones:
     1. Crear la base de datos llamada plataforma_series.

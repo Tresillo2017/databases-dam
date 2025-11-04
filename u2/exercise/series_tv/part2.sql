@@ -60,7 +60,8 @@ DELETE FROM Serie
 WHERE ano_estreno < 2000;
 
 -- Añadir un nuevo género en la tabla Géneros con el nombre "Animación"
-ALTER TABLE Genero CHANGE nombre_genero nombre_genero ENUM('Drama', 'Comedia', 'Ciencia Ficción', 'Acción', 'Terror', 'Fantasía', 'Animación', 'Genero') NOT NULL;
+ALTER TABLE Genero
+CHANGE nombre_genero nombre_genero ENUM('Drama', 'Comedia', 'Ciencia Ficción', 'Acción', 'Terror', 'Fantasía', 'Animación', 'Genero') NOT NULL;
 
 -- Insertar una nueva serie y asignarle el género "Animación"
 INSERT INTO Serie (id_serie, titulo_serie, ano_estreno, id_genero, calificacion, numero_temporadas)

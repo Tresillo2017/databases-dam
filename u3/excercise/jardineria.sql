@@ -67,76 +67,66 @@ SELECT * FROM cliente WHERE ciudad = 'Madrid' AND codigo_representante_ventas IN
 -- CONSULTAS MULTITABLA (COMPOSICIÓN INTERNA)
 
 -- 1. Muestra el nombre de los clientes que hayan realizado pagos junto con el nombre de sus representantes de ventas.
-SELECT c.nombre_cliente AS nombre_cliente, e.nombre AS nombre_representante
+SELECT c.nombre_cliente, p.id_transaccion, e.nombre AS REPRESENTANTE_VENTAS
 FROM cliente c
-JOIN empleado e ON c.codigo_representante_ventas = e.codigo_empleado
 JOIN pago p ON c.codigo_cliente = p.codigo_cliente
-GROUP BY c.nombre_cliente, e.nombre;
+JOIN empleado e ON c.codigo_empleado_rep_ventas = e.codigo_empleado;
 
 -- 2. Muestra el nombre de los clientes que no hayan realizado pagos junto con el nombre de sus representantes de ventas.
-SELECT c.nombre_cliente AS nombre_cliente, e.nombre AS nombre_representante
+SELECT c.nombre_cliente, p.id_transaccion, e.nombre AS REPRESENTANTE_VENTAS
 FROM cliente c
-JOIN empleado e ON c.codigo_representante_ventas = e.codigo_empleado
 LEFT JOIN pago p ON c.codigo_cliente = p.codigo_cliente
-WHERE p.codigo_cliente IS NULL
-GROUP BY c.nombre_cliente, e.nombre;
+JOIN empleado e ON c.codigo_empleado_rep_ventas = e.codigo_empleado
+WHERE p.id_transaccion IS NULL;
 
 -- 3. Devuelve el nombre de los clientes que han hecho pagos y el nombre de sus representantes junto con la ciudad de la oficina a la que pertenece el representante.
-SELECT c.nombre_cliente AS nombre_cliente, e.nombre AS nombre_representante, o.ciudad AS ciudad_oficina
+SELECT c.nombre_cliente, p.id_transaccion, e.nombre AS REPRESENTANTE_VENTAS, o.ciudad
 FROM cliente c
-JOIN empleado e ON c.codigo_representante_ventas = e.codigo_empleado
-JOIN oficina o ON e.codigo_oficina = o.codigo_oficina
-JOIN pago p ON c.codigo_cliente = p.codigo_cliente
-GROUP BY c.nombre_cliente, e.nombre, o.ciudad;
+    JOIN pago p ON c.codigo_cliente = p.codigo_cliente
+    JOIN empleado e ON c.codigo_empleado_rep_ventas = e.codigo_empleado
+    JOIN oficina o ON e.codigo_oficina = o.codigo_oficina;
 
 -- 4. Devuelve el nombre de los clientes que no hayan hecho pagos y el nombre de sus representantes junto con la ciudad de la oficina a la que pertenece el representante.
-SELECT c.nombre_cliente AS nombre_cliente, e.nombre AS nombre_representante, o.ciudad AS ciudad_oficina
+SELECT c.nombre_cliente, p.id_transaccion, e.nombre AS REPRESENTANTE_VENTAS, o.ciudad
 FROM cliente c
-JOIN empleado e ON c.codigo_representante_ventas = e.codigo_empleado
-JOIN oficina o ON e.codigo_oficina = o.codigo_oficina
-LEFT JOIN pago p ON c.codigo_cliente = p.codigo_cliente
-WHERE p.codigo_cliente IS NULL
-GROUP BY c.nombre_cliente, e.nombre, o.ciudad;
+    LEFT JOIN pago p ON c.codigo_cliente = p.codigo_cliente
+    JOIN empleado e ON c.codigo_empleado_rep_ventas = e.codigo_empleado
+    JOIN oficina o ON e.codigo_oficina = o.codigo_oficina
+WHERE p.id_transaccion IS NULL;
 
 -- 5. Lista la dirección de las oficinas que tengan clientes en Fuenlabrada.
-SELECT o.direccion AS direccion_oficina
+SELECT DISTINCT o.linea_direccion1 AS DIRECCION, c.ciudad AS CIUDAD_CLIENTE
 FROM oficina o
-JOIN empleado e ON o.codigo_oficina = e.codigo_oficina
-JOIN cliente c ON e.codigo_empleado = c.codigo_representante_ventas
-WHERE c.ciudad = 'Fuenlabrada'
-GROUP BY o.direccion;
+    JOIN empleado e ON o.codigo_oficina = e.codigo_oficina
+    JOIN cliente c ON e.codigo_empleado = c.codigo_empleado_rep_ventas
+WHERE c.ciudad = 'fuenlabrada';
 
 -- 6. Devuelve el nombre de los clientes y el nombre de sus representantes junto con la ciudad de la oficina a la que pertenece el representante.
-SELECT c.nombre_cliente AS nombre_cliente, e.nombre AS nombre_representante, o.ciudad AS ciudad_oficina
-FROM cliente c
-JOIN empleado e ON c.codigo_representante_ventas = e.codigo_empleado
-JOIN oficina o ON e.codigo_oficina = o.codigo_oficina
-GROUP BY c.nombre_cliente, e.nombre, o.ciudad;
 
 -- 7. Devuelve un listado con el nombre de los empleados junto con el nombre de sus jefes.
-SELECT e.nombre AS nombre_empleado, j.nombre AS nombre_jefe
+SELECT j.nombre AS JEFE, e.nombre AS EMPLEADO
 FROM empleado e
-LEFT JOIN empleado j ON e.codigo_jefe = j.codigo_empleado;
+    JOIN empleado j ON e.codigo_jefe = j.codigo_empleado;
 
 -- 8. Devuelve un listado que muestre el nombre de cada empleado, el nombre de su jefe y el nombre del jefe de su jefe.
-SELECT e.nombre AS nombre_empleado, j.nombre AS nombre_jefe, jj.nombre AS nombre_jefe_de_jefe
+SELECT sj.nombre AS SUPER_JEFE, j.nombre AS JEFE, e.nombre AS EMPLEADO
 FROM empleado e
-LEFT JOIN empleado j ON e.codigo_jefe = j.codigo_empleado
-LEFT JOIN empleado jj ON j.codigo_jefe = jj.codigo_empleado;
+    JOIN empleado j ON e.codigo_jefe = j.codigo_empleado
+    JOIN empleado sj ON j.codigo_jefe = sj.codigo_empleado;
 
 -- 9. Devuelve el nombre de los clientes a los que no se les ha entregado a tiempo un pedido.
-SELECT DISTINCT c.nombre_cliente AS nombre_cliente
+SELECT c.nombre_cliente, pe.fecha_esperada, pe.fecha_entrega
 FROM cliente c
-JOIN pedido p ON c.codigo_cliente = p.codigo_cliente
-WHERE p.fecha_entrega > p.fecha_esperada;
+    JOIN pedido pe ON c.codigo_cliente = pe.codigo_cliente
+WHERE pe.fecha_entrega > pe.fecha_esperada;
 
 -- 10. Devuelve un listado de las diferentes gamas de producto que ha comprado cada cliente.
-SELECT DISTINCT c.nombre_cliente AS nombre_cliente, pr.gama_producto AS gama_producto
+SELECT DISTINCT c.nombre_cliente, g.gama
 FROM cliente c
-JOIN pedido pd ON c.codigo_cliente = pd.codigo_cliente
-JOIN detalle_pedido dp ON pd.codigo_pedido = dp.codigo_pedido
-JOIN producto pr ON dp.codigo_producto = pr.codigo_producto
-ORDER BY c.nombre_cliente, pr.gama_producto;
+    JOIN pedido pe ON c.codigo_cliente = pe.codigo_cliente
+    JOIN detalle_pedido dp ON pe.codigo_pedido = dp.codigo_pedido
+    JOIN producto pr ON dp.codigo_producto = pr.codigo_producto
+    JOIN gama_producto g ON pr.gama = g.gama;
 
 -- CONSULTAS MULTITABLA (COMPOSICIÓN EXTERNA)
 

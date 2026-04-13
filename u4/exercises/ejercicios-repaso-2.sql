@@ -463,6 +463,7 @@ BEGIN
     DECLARE v_diferencia DECIMAL(10,2);
     DECLARE v_texto_posicion VARCHAR(10);
 
+    -- Guardar valores en la variable, y control de errores
     SELECT nombre_jugador, goles, id_equipo
     INTO v_nombre, v_goles, v_id_equipo
     FROM jugador
@@ -473,11 +474,13 @@ BEGIN
             SET MESSAGE_TEXT = 'Error, el jugador no existe';
     END IF;
 
+    -- Calcular media goles del equipo del jugador
     SELECT AVG(j.goles)
     INTO v_media_equipo
     FROM jugador j
     JOIN equipo e ON j.id_equipo = e.id_equipo;
 
+    -- Calcular diferencia de goles - media
     SET v_diferencia = v_goles - v_media_equipo;
 
     IF v_diferencia >= 0 THEN

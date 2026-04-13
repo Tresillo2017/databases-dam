@@ -432,6 +432,12 @@ BEGIN
     RETURN v_puntuacion_juego = v_id_plataforma;
 END $$
 
+SELECT
+    j.titulo,
+    j.puntuacion,
+    ejercicio9(j.id_juego, 'Nintendo Switch') AS dif_respecto_media
+FROM juego j;
+
 -- =====================================================
 -- EJERCICIO 10
 -- Crea un procedimiento que reciba un id_jugador.
@@ -443,3 +449,49 @@ END $$
 --    '[nombre] está [n] goles por [encima/debajo] de la media de su equipo'
 -- 5. Si el jugador no existe, lanzar SIGNAL.
 -- =====================================================
+
+DROP PROCEDURE IF EXISTS ejercicio10;
+DELIMITER $$
+CREATE PROCEDURE ejercicio10(
+    IN p_id_jugador VARCHAR(10)
+)
+BEGIN
+    DECLARE v_nombre VARCHAR(50);
+    DECLARE v_goles INT;
+    DECLARE v_id_equipo VARCHAR(10);
+    DECLARE v_media_equipo DECIMAL(10,2);
+    DECLARE v_diferencia DECIMAL(10,2);
+    DECLARE v_texto_posicion VARCHAR(10);
+
+    SELECT nombre_jugador, goles, id_equipo
+    INTO v_nombre, v_goles, v_id_equipo
+    FROM jugador
+    WHERE id_jugador = p_id_jugador;
+
+    IF v_nombre IS NULL THEN
+        SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'Error, el jugador no existe';
+    END IF;
+
+    SELECT AVG(j.goles)
+    INTO v_media_equipo
+    FROM jugador j
+    JOIN equipo e ON j.id_equipo = e.id_equipo;
+
+    SET v_diferencia = v_goles - v_media_equipo;
+
+    IF v_diferencia >= 0 THEN
+        SET v_texto_posicion = 'encima';
+    ELSE
+        SET v_texto_posicion = 'debajo';
+    END IF ;
+
+    SELECT CONCAT(
+           v_nombre, ' esta ',
+           ABS(v_diferencia), ' goles por ',
+           v_texto_posicion, ' de la media de su equipo'
+           ) AS mensaje;
+END $$
+DELIMITER ;
+
+CALL ejercicio10('3');

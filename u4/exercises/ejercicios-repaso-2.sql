@@ -300,6 +300,58 @@ DELIMITER ;
 -- 4. Si alguno no existe, lanzar SIGNAL.
 -- =====================================================
 
+DROP PROCEDURE IF EXISTS ejercicio7;
+DELIMITER $$
+CREATE PROCEDURE ejercicio7(
+    IN p_id_jugador1 VARCHAR(10),
+    IN p_id_jugador2 VARCHAR(10)
+)
+BEGIN
+    DECLARE v_nombre1 VARCHAR(50);
+    DECLARE v_nombre2 VARCHAR(50);
+    DECLARE v_edad1 INT;
+    DECLARE v_edad2 INT;
+    DECLARE v_diferencia INT;
+    DECLARE v_mayor VARCHAR(50);
+    DECLARE v_menor VARCHAR(50);
+
+    SELECT nombre_jugador, (CURDATE() -YEAR(fecha_nacimiento)) AS "edad"
+    INTO v_nombre1, v_edad1
+    FROM jugador
+    WHERE id_jugador = p_id_jugador1;
+
+    SELECT nombre_jugador, (CURDATE() -YEAR(fecha_nacimiento)) AS "edad"
+    INTO v_nombre2, v_edad2
+    FROM jugador
+    WHERE id_jugador = p_id_jugador2;
+
+    IF v_nombre1 IS NULL OR v_nombre2 IS NULL THEN
+        SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'Error, alguno de los jugadores no existe';
+    END IF ;
+
+    SET v_diferencia = ABS(v_edad1 - v_edad2);
+
+    IF v_edad1 > v_edad2 THEN
+        SET v_mayor = v_nombre1;
+        SET v_menor = v_nombre2;
+    ELSE
+        SET v_mayor = v_nombre2;
+        SET v_menor = v_nombre1;
+    END IF ;
+
+    SELECT CONCAT(
+        v_mayor, ' es ', v_diferencia,
+        ' años mayor que ', v_menor
+    ) AS mensaje;
+end $$
+
+SELECT id_jugador, nombre_jugador, fecha_nacimiento
+FROM jugador
+LIMIT 5;
+
+CALL ejercicio7('3', '4');
+
 -- =====================================================
 -- EJERCICIO 8
 -- Crea una función que reciba un id_juego
